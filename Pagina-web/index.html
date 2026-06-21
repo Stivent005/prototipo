@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TechFinds — Tu buscador de gadgets</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #18181f;
+    --border: #2a2a38;
+    --accent: #6c63ff;
+    --accent2: #a78bfa;
+    --text: #f0f0f5;
+    --muted: #7a7a95;
+    --green: #22d3a0;
+    --card: #14141c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 32px;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.5px; }
+  .logo span { color: var(--accent2); }
+  nav ul { list-style: none; display: flex; gap: 28px; }
+  nav ul a { text-decoration: none; color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s; }
+  nav ul a:hover { color: var(--text); }
+  .nav-cta {
+    background: var(--accent); color: #fff; border: none; padding: 9px 20px;
+    border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity .2s;
+  }
+  .nav-cta:hover { opacity: .85; }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 90px 32px 70px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(108,99,255,.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(108,99,255,.12); border: 1px solid rgba(108,99,255,.3);
+    color: var(--accent2); padding: 6px 14px; border-radius: 100px;
+    font-size: 12px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .hero-badge .dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(36px, 6vw, 68px);
+    font-weight: 700; line-height: 1.1;
+    letter-spacing: -2px; margin-bottom: 20px;
+  }
+  h1 em { font-style: normal; color: var(--accent2); }
+  .hero p { font-size: 18px; color: var(--muted); max-width: 540px; margin: 0 auto 36px; line-height: 1.6; }
+  .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent); color: #fff; border: none;
+    padding: 14px 28px; border-radius: 10px; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: transform .15s, opacity .15s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); opacity: .9; }
+  .btn-secondary {
+    background: transparent; color: var(--text); border: 1px solid var(--border);
+    padding: 14px 28px; border-radius: 10px; font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: border-color .2s;
+  }
+  .btn-secondary:hover { border-color: var(--accent2); }
+
+  /* ── SECTION SHARED ── */
+  section { padding: 72px 32px; max-width: 1100px; margin: 0 auto; }
+  .section-label { font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent2); margin-bottom: 12px; }
+  .section-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(26px, 4vw, 40px); font-weight: 700; letter-spacing: -1px; margin-bottom: 16px; }
+  .section-sub { color: var(--muted); font-size: 16px; line-height: 1.7; max-width: 560px; margin-bottom: 40px; }
+  .divider { border: none; border-top: 1px solid var(--border); }
+
+  /* ── PRODUCTOS ── */
+  .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+  .product-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden;
+    transition: transform .2s, border-color .2s;
+    cursor: pointer;
+  }
+  .product-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+  .product-img {
+    height: 180px; background: var(--bg3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 52px; position: relative;
+  }
+  .badge-new {
+    position: absolute; top: 10px; right: 10px;
+    background: var(--green); color: #000;
+    font-size: 10px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 100px;
+  }
+  .product-info { padding: 16px; }
+  .product-info h3 { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .product-info .store { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .product-info .price { font-size: 18px; font-weight: 700; color: var(--accent2); }
+  .product-info .price-note { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .product-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .btn-buy { flex: 1; background: var(--accent); color: #fff; border: none; padding: 9px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn-wsp { background: #25d366; color: #fff; border: none; padding: 9px 12px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+
+
+
+  /* fab removido — botón en nav */
+
+  /* Overlay */
+  .panel-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 600;
+    background: rgba(0,0,0,.55);
+    backdrop-filter: blur(4px);
+  }
+  .panel-overlay.open { display: block; }
+
+  /* Drawer panel */
+  .pedidos-drawer {
+    position: fixed;
+    top: 0;
+    right: -420px;
+    width: 400px;
+    max-width: 95vw;
+    height: 100vh;
+    z-index: 700;
+    background: var(--bg2);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    transition: right .3s cubic-bezier(.4,0,.2,1);
+    overflow: hidden;
+  }
+  .pedidos-drawer.open { right: 0; }
+
+  /* Drawer header */
+  .drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .drawer-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .drawer-close {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s;
+    font-family: inherit;
+  }
+  .drawer-close:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Login inside drawer */
+  .drawer-login {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .drawer-login-box {
+    text-align: center;
+    width: 100%;
+    max-width: 280px;
+  }
+  .drawer-login-box .lock-icon { font-size: 36px; margin-bottom: 12px; opacity: .7; }
+  .drawer-login-box h3 { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .drawer-login-box p { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+  .drawer-login-box input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    text-align: center;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    transition: border-color .2s;
+  }
+  .drawer-login-box input:focus { border-color: var(--accent); }
+  .drawer-login-box .btn-login { width: 100%; }
+  .drawer-login-box .login-error {
+    color: #f87171;
+    font-size: 12px;
+    margin-top: 10px;
+    display: none;
+  }
+
+  /* Stats compactos */
+  .drawer-stats {
+    display: flex;
+    gap: 8px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .dstat {
+    flex: 1;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .dstat-val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent2);
+  }
+  .dstat-lbl { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  /* Acciones del drawer */
+  .drawer-actions {
+    display: flex;
+    gap: 8px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .drawer-btn {
+    flex: 1;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: inherit;
+  }
+  .drawer-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .drawer-btn.danger:hover { border-color: #f87171; color: #f87171; }
+
+  /* Lista dentro del drawer */
+  .drawer-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .drawer-list::-webkit-scrollbar { width: 4px; }
+  .drawer-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .pedido-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    transition: border-color .2s;
+  }
+  .pedido-card:hover { border-color: var(--accent); }
+  .pedido-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .pedido-card h4 {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.35;
+    flex: 1;
+  }
+  .pedido-card-price {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--green);
+    white-space: nowrap;
+  }
+  .pedido-card-meta {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .pedido-card-tag {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 1px 7px;
+    font-size: 10px;
+    font-weight: 500;
+  }
+  .pedido-card-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .pc-btn-wa {
+    flex: 1;
+    background: #22c55e18;
+    color: #22c55e;
+    border: 1px solid #22c55e35;
+    border-radius: 7px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: inherit;
+  }
+  .pc-btn-wa:hover { background: #22c55e; color: #000; }
+  .pc-btn-del {
+    background: #ef444418;
+    color: #ef4444;
+    border: 1px solid #ef444435;
+    border-radius: 7px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: inherit;
+  }
+  .pc-btn-del:hover { background: #ef4444; color: #fff; }
+
+  .drawer-empty {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 48px 0;
+  }
+  .drawer-empty-ico { font-size: 36px; margin-bottom: 10px; opacity: .5; }
+
+  /* ── PEDIDOS PRIVADOS (drawer) ── */
+
+
+
+
+
+  .login-form input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    text-align: center;
+    letter-spacing: 2px;
+    transition: border-color .2s;
+  }
+  .login-form input:focus { border-color: var(--accent); }
+  .btn-login {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .2s;
+    font-family: inherit;
+  }
+  .btn-login:hover { opacity: .85; }
+  .login-error {
+    color: #f87171;
+    font-size: 13px;
+    margin-top: 12px;
+    display: none;
+  }
+  /* stats */
+  .stat-box {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+  }
+  .stat-val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent2);
+  }
+  .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  /* pedido item mejorado */
+  .pedido-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .pedido-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .btn-pedido-wa {
+    background: #22c55e22;
+    color: #22c55e;
+    border: 1px solid #22c55e44;
+    border-radius: 7px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: inherit;
+  }
+  .btn-pedido-wa:hover { background: #22c55e; color: #000; }
+  .btn-pedido-del {
+    background: #ef444422;
+    color: #ef4444;
+    border: 1px solid #ef444440;
+    border-radius: 7px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: inherit;
+  }
+  .btn-pedido-del:hover { background: #ef4444; color: #fff; }
+  .pedido-cliente { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+  /* ── COMO FUNCIONA (eliminado) ── */
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; }
+  .step {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px 24px;
+    position: relative; overflow: hidden;
+  }
+  .step::before {
+    content: attr(data-n);
+    position: absolute; top: -10px; right: 16px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 80px; font-weight: 700;
+    color: rgba(108,99,255,.07);
+    line-height: 1;
+  }
+  .step-icon { font-size: 28px; margin-bottom: 14px; }
+  .step h3 { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .step p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  /* ── BUSQUEDA IA ── */
+  #buscar { background: var(--bg2); border-radius: 20px; padding: 56px 48px; position: relative; overflow: hidden; max-width: 1100px; margin: 0 auto 80px; }
+  #buscar::before {
+    content: '';
+    position: absolute; top: -80px; right: -80px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(108,99,255,.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .search-form { display: flex; flex-direction: column; gap: 16px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group label { font-size: 13px; font-weight: 500; color: var(--muted); }
+  .form-group input, .form-group textarea, .form-group select {
+    background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text); border-radius: 10px; padding: 12px 14px;
+    font-size: 14px; font-family: inherit; outline: none;
+    transition: border-color .2s;
+  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    border-color: var(--accent);
+  }
+  .form-group textarea { resize: vertical; min-height: 90px; }
+  .upload-area {
+    border: 2px dashed var(--border); border-radius: 10px;
+    padding: 28px; text-align: center; cursor: pointer;
+    transition: border-color .2s, background .2s;
+  }
+  .upload-area:hover { border-color: var(--accent); background: rgba(108,99,255,.04); }
+  .upload-area .upload-icon { font-size: 32px; margin-bottom: 8px; }
+  .upload-area p { font-size: 14px; color: var(--muted); }
+  .upload-area span { font-size: 12px; color: var(--accent2); font-weight: 500; }
+  #fileInput { display: none; }
+  #preview-img { max-width: 100%; max-height: 150px; border-radius: 8px; margin-top: 10px; display: none; }
+  .submit-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .btn-search-ai {
+    background: var(--accent); color: #fff; border: none;
+    padding: 14px 32px; border-radius: 10px; font-size: 15px; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; gap: 10px;
+    transition: transform .15s, opacity .15s;
+  }
+  .btn-search-ai:hover { transform: translateY(-2px); opacity: .9; }
+  .btn-search-ai:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+  .btn-wsp-submit {
+    background: #25d366; color: #fff; border: none;
+    padding: 14px 24px; border-radius: 10px; font-size: 14px; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; gap: 8px;
+    transition: opacity .2s;
+  }
+  .btn-wsp-submit:hover { opacity: .9; }
+  .note { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* ── RESULTADOS IA ── */
+  #ai-results { margin-top: 32px; display: none; }
+  #ai-results .results-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+  }
+  #ai-results .results-header h3 { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 600; }
+  .ai-badge {
+    background: rgba(108,99,255,.15); border: 1px solid rgba(108,99,255,.3);
+    color: var(--accent2); font-size: 11px; font-weight: 700; padding: 3px 10px;
+    border-radius: 100px; letter-spacing: .5px; text-transform: uppercase;
+  }
+  .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+  .result-card {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px; transition: border-color .2s;
+  }
+  .result-card:hover { border-color: var(--accent); }
+  .result-card .store-tag {
+    font-size: 11px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 6px; display: inline-block; margin-bottom: 10px;
+  }
+  .tag-temu { background: rgba(255,103,0,.15); color: #ff8c42; }
+  .tag-shein { background: rgba(255,60,90,.15); color: #ff6b8a; }
+  .tag-ml { background: rgba(255,225,0,.15); color: #ffd700; }
+  .result-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 6px; line-height: 1.4; }
+  .result-card .r-price { font-size: 20px; font-weight: 700; color: var(--accent2); margin: 8px 0 4px; }
+  .result-card .r-note { font-size: 12px; color: var(--muted); }
+  .result-card .r-add {
+    width: 100%; background: var(--accent); color: #fff; border: none;
+    padding: 9px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    margin-top: 14px; cursor: pointer; transition: opacity .2s;
+  }
+  .result-card .r-add:hover { opacity: .85; }
+
+  /* loading spinner */
+  .spinner {
+    display: inline-block; width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── LISTA DE PEDIDOS ── */
+  #pedidos-list { display: flex; flex-direction: column; gap: 10px; }
+  .pedido-item {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    flex-wrap: wrap;
+  }
+  .pedido-info h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .pedido-info p { font-size: 13px; color: var(--muted); }
+  .pedido-price { font-size: 18px; font-weight: 700; color: var(--green); white-space: nowrap; }
+  .pedido-source { font-size: 11px; color: var(--muted); text-align: right; }
+  .pedido-empty { text-align: center; color: var(--muted); font-size: 14px; padding: 40px 0; }
+  .clear-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+  .clear-btn:hover { border-color: #ff6b6b; color: #ff6b6b; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px; text-align: center;
+    font-size: 13px; color: var(--muted);
+  }
+  footer a { color: var(--accent2); text-decoration: none; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width: 640px) {
+    nav { padding: 14px 20px; }
+    nav ul { display: none; }
+    .hero { padding: 60px 20px 50px; }
+    section { padding: 50px 20px; }
+    #buscar { padding: 32px 20px; }
+    .form-row { grid-template-columns: 1fr; }
+    .submit-row { flex-direction: column; }
+    .btn-search-ai, .btn-wsp-submit { width: 100%; justify-content: center; }
+  }
+
+  /* toast */
+  #toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--green); color: #000;
+    padding: 12px 20px; border-radius: 10px;
+    font-size: 14px; font-weight: 600;
+    transform: translateY(80px); opacity: 0;
+    transition: all .3s; z-index: 999;
+  }
+  #toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ── FAB BUTTON ── */
+  .fab-pedidos {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 500;
+    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 6px 28px rgba(108,99,255,.4);
+    transition: all .22s cubic-bezier(.4,0,.2,1);
+  }
+  .fab-pedidos:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 10px 36px rgba(108,99,255,.55);
+  }
+  .fab-badge {
+    background: #fff;
+    color: var(--accent);
+    border-radius: 50%;
+    min-width: 20px;
+    height: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+  }
+  .fab-badge.visible { display: flex; }
+  @media (max-width: 600px) {
+    .fab-pedidos { bottom: 20px; right: 16px; padding: 12px 18px; font-size: 13px; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Tech<span>Finds</span></div>
+  <ul>
+    <li><a href="#productos">Productos</a></li>
+    <li><a href="#buscar">Buscar producto</a></li>
+  </ul>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button class="nav-cta" onclick="scrollTo('#buscar')">Pedir producto</button>
+
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge"><span class="dot"></span> IA buscando por ti</div>
+  <h1>Gadgets que quieres,<br><em>precios reales</em></h1>
+  <p>Dinos qué producto buscas, nuestra IA lo encuentra en Temu, Shein y Mercado Libre y te cotiza al instante.</p>
+  <div class="hero-actions">
+    <button class="btn-primary" onclick="document.getElementById('buscar').scrollIntoView({behavior:'smooth'})">🔍 Buscar un producto</button>
+  </div>
+</div>
+
+<!-- PRODUCTOS -->
+<section id="productos">
+  <div class="section-label">Catálogo</div>
+  <h2 class="section-title">Disponibles ahora</h2>
+  <p class="section-sub">Productos listos para pedir. Si no ves lo que buscas, usa el buscador con IA más abajo.</p>
+  <div class="products-grid" id="products-grid">
+    <!-- generados por JS -->
+  </div>
+</section>
+
+
+<hr class="divider" style="margin: 0 32px;">
+
+<!-- BUSCADOR IA -->
+<div style="padding: 72px 32px;">
+  <div id="buscar">
+    <div class="section-label">Buscador IA</div>
+    <h2 class="section-title">¿No encuentras lo que buscas?</h2>
+    <p class="section-sub">Dime qué necesitas y la IA busca los mejores precios por ti en las 3 plataformas.</p>
+
+    <div class="search-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tu nombre</label>
+          <input type="text" id="inp-nombre" placeholder="Ej: Carlos Ramírez">
+        </div>
+        <div class="form-group">
+          <label>Tu WhatsApp</label>
+          <input type="tel" id="inp-tel" placeholder="+57 300 000 0000">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>¿Qué producto buscas?</label>
+        <input type="text" id="inp-producto" placeholder="Ej: Audífonos inalámbricos con cancelación de ruido, color negro">
+      </div>
+
+      <div class="form-group">
+        <label>Detalles adicionales (opcional)</label>
+        <textarea id="inp-detalles" placeholder="Marca preferida, color, tamaño, uso especial..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Foto de referencia (opcional)</label>
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+          <div class="upload-icon">📷</div>
+          <p>Toca para subir una foto del producto</p>
+          <span>JPG, PNG, WEBP — máx 5MB</span>
+          <img id="preview-img" src="" alt="preview">
+        </div>
+        <input type="file" id="fileInput" accept="image/*">
+      </div>
+
+      <div class="submit-row">
+        <button class="btn-search-ai" id="btn-buscar" onclick="buscarProducto()">
+          <span id="btn-icon">🤖</span>
+          <span id="btn-text">Buscar con IA</span>
+        </button>
+        <button class="btn-wsp-submit" onclick="enviarWhatsApp()">
+          <span>💬</span> Enviar por WhatsApp
+        </button>
+        <p class="note">También recibirás la cotización en tu WhatsApp.</p>
+      </div>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div id="ai-results">
+      <div class="results-header">
+        <h3>Cotización encontrada</h3>
+        <span class="ai-badge">IA</span>
+      </div>
+      <div class="results-grid" id="results-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FAB PEDIDOS (esquina inferior derecha) -->
+<button class="fab-pedidos" onclick="openDrawer()" id="fabPedidos">
+  📋 Pedidos
+  <span class="fab-badge" id="fabBadge"></span>
+</button>
+
+<!-- PEDIDOS (PRIVADO) -->
+<!-- OVERLAY -->
+<div class="panel-overlay" id="panelOverlay" onclick="closeDrawer()"></div>
+
+<!-- DRAWER PANEL -->
+<div class="pedidos-drawer" id="pedidosDrawer">
+
+  <!-- HEADER SIEMPRE VISIBLE -->
+  <div class="drawer-header">
+    <div class="drawer-title">📋 Lista de pedidos</div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="drawer-login" id="pedidos-login">
+    <div class="drawer-login-box">
+      <div class="lock-icon">🔒</div>
+      <h3>Acceso privado</h3>
+      <p>Solo tú puedes ver los pedidos de tus clientes.</p>
+      <input type="password" id="pedidos-pass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')verifyAdminPass()">
+      <button class="btn-login" onclick="verifyAdminPass()">Entrar</button>
+      <div class="login-error" id="login-error">Contraseña incorrecta.</div>
+    </div>
+  </div>
+
+  <!-- CONTENIDO ADMIN -->
+  <div id="pedidos-content" style="display:none;flex:1;flex-direction:column;overflow:hidden;display:none">
+
+    <!-- Stats -->
+    <div class="drawer-stats" id="pedidos-stats"></div>
+
+    <!-- Acciones -->
+    <div class="drawer-actions">
+      <button class="drawer-btn" onclick="exportarPedidos()">📥 Exportar</button>
+      <button class="drawer-btn danger" onclick="limpiarPedidos()">🗑 Limpiar</button>
+      <button class="drawer-btn" onclick="cerrarSesion()">🔒 Salir</button>
+    </div>
+
+    <!-- Lista -->
+    <div class="drawer-list" id="pedidos-list">
+      <div class="drawer-empty"><div class="drawer-empty-ico">📭</div>Aún no hay pedidos.</div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 TechFinds · Hecho con 💜 para ti · <a href="#">Términos</a> · <a href="#">WhatsApp</a></p>
+</footer>
+
+<div id="toast">✅ ¡Agregado a la lista de pedidos!</div>
+
+<script>
+// ── TU NÚMERO DE WHATSAPP ──────────────────────────────────────────────────
+const MI_WHATSAPP = '573026393234'; 
+// ──────────────────────────────────────────────────────────────────────────
+
+// Productos de ejemplo
+const productosEjemplo = [
+  { emoji:'🎧', nombre:'Audífonos Bluetooth Pro', tienda:'Temu', precio:'$45.000', badge:true },
+  { emoji:'⌚', nombre:'Smartwatch Fit X3', tienda:'Shein', precio:'$89.000', badge:false },
+  { emoji:'🖱️', nombre:'Mouse Gamer RGB', tienda:'Mercado Libre', precio:'$62.000', badge:true },
+  { emoji:'📱', nombre:'Soporte Magnético Auto', tienda:'Temu', precio:'$18.000', badge:false },
+  { emoji:'🔋', nombre:'Cargador Rápido 65W', tienda:'Shein', precio:'$35.000', badge:true },
+  { emoji:'💡', nombre:'Tira LED RGB 5m', tienda:'Temu', precio:'$28.000', badge:false },
+  { emoji:'🎮', nombre:'Control Gamepad USB', tienda:'Mercado Libre', precio:'$75.000', badge:false },
+  { emoji:'📷', nombre:'Webcam HD 1080p', tienda:'Temu', precio:'$55.000', badge:true },
+];
+
+// Render productos
+const grid = document.getElementById('products-grid');
+productosEjemplo.forEach(p => {
+  grid.innerHTML += `
+  <div class="product-card">
+    <div class="product-img">${p.emoji}${p.badge ? '<span class="badge-new">Nuevo</span>' : ''}</div>
+    <div class="product-info">
+      <h3>${p.nombre}</h3>
+      <div class="store">📦 ${p.tienda}</div>
+      <div class="price">${p.precio}</div>
+      <div class="price-note">+ envío aprox. $8.000</div>
+      <div class="product-actions">
+        <button class="btn-buy" onclick="agregarPedido('${p.nombre}', '${p.precio}', '${p.tienda}')">Pedir</button>
+        <button class="btn-wsp" onclick="pedirPorWsp('${p.nombre}', '${p.precio}')">💬</button>
+      </div>
+    </div>
+  </div>`;
+});
+
+// Preview imagen
+document.getElementById('fileInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    const img = document.getElementById('preview-img');
+    img.src = ev.target.result;
+    img.style.display = 'block';
+  };
+  r.readAsDataURL(file);
+});
+
+// ── BUSCAR CON IA ──────────────────────────────────────────────────────────
+async function buscarProducto() {
+  const nombre   = document.getElementById('inp-nombre').value.trim();
+  const producto = document.getElementById('inp-producto').value.trim();
+
+  if (!producto) { alert('Escribe el nombre del producto que buscas.'); return; }
+
+  const btn = document.getElementById('btn-buscar');
+  btn.disabled = true;
+  document.getElementById('btn-icon').innerHTML = '<span class="spinner"></span>';
+  document.getElementById('btn-text').textContent = 'Buscando...';
+
+  const fileInput = document.getElementById('fileInput');
+  let imageContent = null;
+  if (fileInput.files[0]) {
+    imageContent = await toBase64(fileInput.files[0]);
+  }
+
+  const promptText = `Eres un asistente experto en compras online en Colombia. El cliente busca: "${producto}".
+Detalles extra: ${document.getElementById('inp-detalles').value || 'ninguno'}.
+
+Genera una cotización REALISTA con precios en PESOS COLOMBIANOS para este producto en 3 tiendas: Temu, Shein y Mercado Libre Colombia.
+
+Responde ÚNICAMENTE con un array JSON (sin backticks, sin explicación), con exactamente 3 objetos así:
+[
+  {
+    "tienda": "Temu",
+    "nombre": "nombre descriptivo del producto",
+    "precio": "precio en COP formateado con puntos ej: $45.000",
+    "envio": "tiempo y costo estimado de envío",
+    "nota": "frase corta de ventaja o desventaja de esta opción"
+  },
+  ...
+]`;
+
+  try {
+    const messages = [];
+    if (imageContent) {
+      messages.push({
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: fileInput.files[0].type, data: imageContent } },
+          { type: 'text', text: promptText }
+        ]
+      });
+    } else {
+      messages.push({ role: 'user', content: promptText });
+    }
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000, messages })
+    });
+
+    const data = await res.json();
+    const raw = data.content.map(b => b.text || '').join('');
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const resultados = JSON.parse(clean);
+    mostrarResultados(resultados, producto);
+  } catch (err) {
+    console.error(err);
+    alert('Hubo un error buscando el producto. Intenta de nuevo.');
+  } finally {
+    btn.disabled = false;
+    document.getElementById('btn-icon').textContent = '🤖';
+    document.getElementById('btn-text').textContent = 'Buscar con IA';
+  }
+}
+
+function toBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+function mostrarResultados(resultados, producto) {
+  const sec  = document.getElementById('ai-results');
+  const grid = document.getElementById('results-grid');
+  const tagMap = { 'Temu':'tag-temu', 'Shein':'tag-shein', 'Mercado Libre':'tag-ml' };
+
+  grid.innerHTML = resultados.map(r => `
+    <div class="result-card">
+      <span class="store-tag ${tagMap[r.tienda] || 'tag-ml'}">${r.tienda}</span>
+      <h4>${r.nombre}</h4>
+      <div class="r-price">${r.precio}</div>
+      <div class="r-note">🚚 ${r.envio}</div>
+      <div class="r-note" style="margin-top:6px">💡 ${r.nota}</div>
+      <button class="r-add" onclick="agregarPedido('${r.nombre.replace(/'/g,"\\'")}', '${r.precio}', '${r.tienda}')">
+        + Agregar a mi pedido
+      </button>
+    </div>
+  `).join('');
+
+  sec.style.display = 'block';
+  sec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ── PEDIDOS ────────────────────────────────────────────────────────────────
+let pedidos = JSON.parse(localStorage.getItem('techfinds_pedidos') || '[]');
+
+function agregarPedido(nombre, precio, tienda) {
+  const nombre_cliente = document.getElementById('inp-nombre').value.trim();
+  const tel = document.getElementById('inp-tel').value.trim();
+  pedidos.push({ nombre, precio, tienda, nombre_cliente, tel, fecha: new Date().toLocaleString('es-CO') });
+  localStorage.setItem('techfinds_pedidos', JSON.stringify(pedidos));
+  if (adminLoggedIn) { renderPedidos(); renderStats(); }
+  updateFabBadge();
+  showToast();
+}
+
+function renderPedidos() {
+  const el = document.getElementById('pedidos-list');
+  if (!pedidos.length) {
+    el.innerHTML = '<div class="drawer-empty"><div class="drawer-empty-ico">📭</div>Aún no hay pedidos.</div>';
+    return;
+  }
+  el.innerHTML = pedidos.map((p, i) => `
+    <div class="pedido-card">
+      <div class="pedido-card-top">
+        <h4>${p.nombre}</h4>
+        <div class="pedido-card-price">${p.precio}</div>
+      </div>
+      <div class="pedido-card-meta">
+        <span class="pedido-card-tag">📦 ${p.tienda}</span>
+        ${p.nombre_cliente ? `<span class="pedido-card-tag">👤 ${p.nombre_cliente}</span>` : ''}
+        ${p.tel ? `<span class="pedido-card-tag">📞 ${p.tel}</span>` : ''}
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">${p.fecha}</div>
+      <div class="pedido-card-actions">
+        ${p.tel ? `<button class="pc-btn-wa" onclick='contactarWsp(${JSON.stringify(p)})'>💬 Contactar</button>` : '<span style="flex:1"></span>'}
+        <button class="pc-btn-del" onclick="eliminarPedidoDrawer(${i})">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+function eliminarPedidoDrawer(i) {
+  pedidos.splice(i, 1);
+  localStorage.setItem('techfinds_pedidos', JSON.stringify(pedidos));
+  renderPedidos(); renderStats(); updateFabBadge();
+}
+
+function limpiarPedidos() {
+  if (!confirm('¿Limpiar toda la lista de pedidos?')) return;
+  pedidos = [];
+  localStorage.removeItem('techfinds_pedidos');
+  renderPedidos(); renderStats(); updateFabBadge();
+}
+
+renderPedidos();
+
+// ── WHATSAPP ───────────────────────────────────────────────────────────────
+function enviarWhatsApp() {
+  const nombre   = document.getElementById('inp-nombre').value.trim() || 'Cliente';
+  const tel      = document.getElementById('inp-tel').value.trim();
+  const producto = document.getElementById('inp-producto').value.trim();
+  const detalles = document.getElementById('inp-detalles').value.trim();
+
+  if (!producto) { alert('Escribe qué producto buscas antes de enviar.'); return; }
+
+  const msg = `🛒 *Nueva solicitud de producto*
+
+👤 Nombre: ${nombre}
+📱 Contacto: ${tel || 'No especificado'}
+
+📦 Producto: ${producto}
+📝 Detalles: ${detalles || 'Sin detalles adicionales'}
+
+_Enviado desde TechFinds_`;
+
+  const url = `https://wa.me/${MI_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+}
+
+function pedirPorWsp(nombre, precio) {
+  const msg = `🛒 Hola! Quiero pedir:\n*${nombre}*\nPrecio visto: ${precio}\n\n¿Cómo procedo con el pago?`;
+  window.open(`https://wa.me/${MI_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+// ── TOAST ──────────────────────────────────────────────────────────────────
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+
+// ── CONTRASEÑA ADMIN ──────────────────────────────────────
+const ADMIN_PASS = 'Stiven200919'; 
+// ──────────────────────────────────────────────────────────────────────────
+
+let adminLoggedIn = sessionStorage.getItem('tf_admin') === '1';
+
+function initAdminSection() {
+  if (adminLoggedIn) showAdminContent();
+  updateFabBadge();
+}
+
+function verifyAdminPass() {
+  const pass = document.getElementById('pedidos-pass').value;
+  const errEl = document.getElementById('login-error');
+  if (pass === ADMIN_PASS) {
+    adminLoggedIn = true;
+    sessionStorage.setItem('tf_admin', '1');
+    errEl.style.display = 'none';
+    showAdminContent();
+  } else {
+    errEl.style.display = 'block';
+    document.getElementById('pedidos-pass').value = '';
+    document.getElementById('pedidos-pass').focus();
+  }
+}
+
+function openDrawer() {
+  document.getElementById('pedidosDrawer').classList.add('open');
+  document.getElementById('panelOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if (adminLoggedIn) { renderPedidos(); renderStats(); }
+  setTimeout(() => document.getElementById('pedidos-pass') && !adminLoggedIn && document.getElementById('pedidos-pass').focus(), 300);
+}
+function closeDrawer() {
+  document.getElementById('pedidosDrawer').classList.remove('open');
+  document.getElementById('panelOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function showAdminContent() {
+  document.getElementById('pedidos-login').style.display = 'none';
+  const c = document.getElementById('pedidos-content');
+  c.style.display = 'flex';
+  c.style.flexDirection = 'column';
+  c.style.overflow = 'hidden';
+  c.style.flex = '1';
+  renderPedidos();
+  renderStats();
+}
+function updateFabBadge() {
+  const nb = document.getElementById('navBadge');
+  if (!nb) return;
+  if (pedidos.length > 0) {
+    nb.textContent = pedidos.length;
+    nb.style.display = 'flex';
+  } else {
+    nb.style.display = 'none';
+  }
+}
+
+function cerrarSesion() {
+  adminLoggedIn = false;
+  sessionStorage.removeItem('tf_admin');
+  document.getElementById('pedidos-login').style.display = 'flex';
+  document.getElementById('pedidos-content').style.display = 'none';
+  document.getElementById('pedidos-pass').value = '';
+}
+
+function renderStats() {
+  const el = document.getElementById('pedidos-stats');
+  if (!el) return;
+  const total = pedidos.length;
+  const tiendas = {};
+  pedidos.forEach(p => { tiendas[p.tienda] = (tiendas[p.tienda] || 0) + 1; });
+  const top = Object.entries(tiendas).sort((a,b) => b[1]-a[1])[0];
+  el.innerHTML = `
+    <div class="dstat"><div class="dstat-val">${total}</div><div class="dstat-lbl">Pedidos</div></div>
+    <div class="dstat"><div class="dstat-val" style="font-size:13px">${top ? top[0] : '—'}</div><div class="dstat-lbl">+ pedida</div></div>
+    <div class="dstat"><div class="dstat-val">${Object.keys(tiendas).length}</div><div class="dstat-lbl">Tiendas</div></div>`;
+}
+
+function exportarPedidos() {
+  if (!pedidos.length) { alert('No hay pedidos para exportar.'); return; }
+  const txt = pedidos.map((p,i) => `#${i+1} | ${p.nombre} | ${p.precio} | ${p.tienda} | ${p.nombre_cliente||'—'} | ${p.tel||'—'} | ${p.fecha}`).join('\n');
+  const blob = new Blob([txt], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'pedidos_techfinds.txt';
+  a.click();
+}
+
+function eliminarPedido(i) {
+  pedidos.splice(i, 1);
+  localStorage.setItem('techfinds_pedidos', JSON.stringify(pedidos));
+  renderPedidos(); renderStats(); updateFabBadge();
+}
+
+function contactarWsp(p) {
+  const msg = `Hola! Vi que pediste *${p.nombre}* (${p.precio} en ${p.tienda}). ¿Quieres proceder con el pedido?`;
+  window.open(`https://wa.me/${(p.tel||'').replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+initAdminSection();
+
+function scrollTo(selector) {
+  document.querySelector(selector).scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
